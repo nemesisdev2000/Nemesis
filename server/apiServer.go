@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/nemesisdev2000/Nemesis/server/C2Server"
 )
 
 type test struct {
@@ -17,18 +18,33 @@ var tests = []test{
 	{ID: "2", Title: "Test2"},
 }
 
+type listenerProfile struct {
+	Type string `json:"type"`
+	Port string `json:"port"`
+}
+
 func main() {
 	router := gin.Default()
-	router.GET("/tests", getData)
 	router.GET("/tests/:id", getItemByID)
 	router.POST("/tests", addData)
+	router.POST("/listen", startListener)
 
 	router.Run("localhost:8000")
 	fmt.Println("Running")
 }
 
-func getData(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, tests)
+func startListener(c *gin.Context) {
+	var lp listenerProfile
+	if err := c.BindJSON(&lp); err != nil {
+		return
+	}
+
+	port := lp.Port
+	ltype := lp.Type
+
+	l := C2Server.Listen(port, ltype)
+	c.IndentedJSON(http.StatusOK, lp)
+	c.Data(http.StatusOK, "Content-Type: text/html", []byte(l.RemoteAddr().String()))
 }
 
 func addData(c *gin.Context) {
