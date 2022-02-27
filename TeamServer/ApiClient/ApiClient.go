@@ -6,16 +6,13 @@ import (
 	"net/http"
 
 	"github.com/jmcvetta/napping"
+	"github.com/nemesisdev2000/Nemesis/TeamServer/AuthenticationServer"
 )
 
 type Post struct {
-	Type string `json:"type"`
-	Port string `json:"port"`
-}
-
-type Config struct {
-	Type string
-	Port string
+	Type  string `json:"type"`
+	Port  string `json:"port"`
+	Token string `json:"token"`
 }
 
 func SendPost(rw http.ResponseWriter, r *http.Request) {
@@ -27,6 +24,12 @@ func SendPost(rw http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 
+	t := AuthenticationServer.ValidateRequest(post.Token)
+	if t == false {
+		rw.WriteHeader(http.StatusBadRequest)
+		rw.Write([]byte("Unauthorized Request"))
+		return
+	}
 	url := "http://localhost:8000/listen"
 	s := napping.Session{}
 	h := &http.Header{}

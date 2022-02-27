@@ -1,13 +1,15 @@
 import requests
 
 def startListener():
+    token = input("Enter Token : ")
     url = "http://127.0.0.1:5555/api/listen"
     headers = {
             "Content-Type": "application/json"
             }
     data = {
             "type": "TcpListener",
-            "port": "1332"
+            "port": "1331",
+            "token": token
             }
     try:
         res = requests.post(url = url, json = data, headers = headers)

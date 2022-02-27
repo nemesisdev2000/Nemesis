@@ -103,3 +103,20 @@ func SigninHandler(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusOK)
 	rw.Write([]byte(tokenString))
 }
+
+//this checks if a signed in user is sending the command or not
+func ValidateRequest(token string) bool {
+	flag := false
+	for _, a := range tokenList {
+		if a == token {
+			flag = true
+			break
+		}
+	}
+	if flag == false {
+		fmt.Println("Unauthorized request")
+		return false
+	} else {
+		return true
+	}
+}
