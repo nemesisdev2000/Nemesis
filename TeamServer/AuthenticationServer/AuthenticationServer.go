@@ -1,108 +1,71 @@
 package AuthenticationServer
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/base64"
-	"encoding/json"
+	"errors"
 	"fmt"
-	"strings"
+	"net/http"
+	"time"
+
+	"github.com/nemesisdev2000/Nemesis/TeamServer/Jwt"
+	"github.com/nemesisdev2000/Nemesis/TeamServer/UserDB"
 )
 
-type user struct {
-	username     string
-	passwordhash string
-	createDate   string
-	role         int
-}
+var tokenList []string
 
-func GetUserObject(username string) (user, bool) {
-	for _, user := range userList {
-		if user.email == email {
-			return user, true
-		}
-		return user{}, false
+func SignupHandler(rw http.ResponseWriter, r *http.Request) {
+	if _, ok := r.Header["Username"]; !ok {
+		rw.WriteHeader(http.StatusBadRequest)
+		rw.Write([]byte("Username Missing"))
+		return
 	}
-}
-
-func (u *user) ValidatePasswordHash(pswdhash string) {
-	return u.passwordhash == pswdhash
-}
-
-func AddUserObject(username string, passwordhash string, role int) {
-	newUser := user{
-		username:     username,
-		passwordhash: passwordhash,
-		role:         role,
+	if _, ok := r.Header["Passwordhash"]; !ok {
+		rw.WriteHeader(http.StatusBadRequest)
+		rw.Write([]byte("Passwordhash missing"))
+		return
 	}
 
-	//Check if the user already exists
+	//validate and then add the user
 
-	for _, ele := range userList {
-		if ele.username == username {
-			return false
-		}
+	check := UserDB.AddUserObject(r.Header["Username"][0], r.Header["Passwordhash"][0], 0)
+
+	if !check {
+		rw.WriteHeader(http.StatusBadRequest)
+		rw.Write([]byte("Username already exists"))
+		return
 	}
-	userList = append(userList, newUser)
-	return true
+	rw.WriteHeader(http.StatusOK)
+	rw.Write([]byte("Client Added"))
 }
 
-func GenerateToken(header string, payload map[string]string, secret string) (string, error) {
-	h := hmac.New(sha256.New, []byet(secret))
-	header64 := base64.StdEncoding.EncodeToString([]byte(header))
+func GetSignedToken() (string, error) {
+	claimsMap := map[string]string{
+		"aud": "dosxuz.gitlab.io",
+		"iss": "gitlab.io",
+		"exp": fmt.Sprint(time.Now().Add(time.Minute * 1).Unix()),
+	}
 
-	payloadstr, err := json.Marshal(payload)
+	secret := "somepassword"
+	header := "HS256"
+	tokenString, err := Jwt.GenerateToken(header, claimsMap, secret)
 	if err != nil {
-		fmt.Println("Error generating toke")
-		return string(payloadstr), err
+		return tokenString, err
 	}
-
-	payload64 := base64.StdEncoding.EncodeToString(payloadstr)
-
-	message := header64 + "." + payload64
-	usignedStr := header + string(payloadstr)
-
-	h.Write([]byte(unsignedStr))
-	signature := base64.StdEncoding.EncodeToString(h.Sum(nil))
-	tokenStr := message + "." + signature
-	return tokeStr, nil
+	return tokenString, nil
 }
 
-func ValidateToken(token string, secret string) (bool, error) {
-	splitToken := strings.Split(token, ".")
-	if len(splitToken) != 3 {
+func ValidateUser(username string, passwordhash string) (bool, error) {
+	user, exists := UserDB.GetUserObject(username)
+	if !exists {
+		return false, errors.New("Client does not exist")
+	}
+	passwordCheck := user.ValidatePasswordHash(passwordhash)
+	if !passwordCheck {
 		return false, nil
 	}
-
-	header, err := base64.StdEncoding.DecodeString(splitToken[0])
-	if err != nil {
-		return false, err
-	}
-	payload, err := base64.StdEncoding.DecodeString(splitToken[0])
-	if err != nil {
-		return false, err
-	}
-
-	unsignedStr := string(header) + string(payload)
-	if err != nil {
-		return false, err
-	}
-
-	unsignedStr := string(header) + string(payload)
-	h := hmac.New(sha256.New, []byte(secret))
-	h.Write([]byte(unsignedStr))
-
-	signature := base64.StdEncoding.EncodeToString(h.Sum(nil))
-	fmt.Println(signature)
-
-	if signature != splitToken[2] {
-		return false, nil
-	}
-
 	return true, nil
 }
 
-func SignupHandler(rw http.ResponseWrite, r *http.Request) {
+func SigninHandler(rw http.ResponseWriter, r *http.Request) {
 	if _, ok := r.Header["Username"]; !ok {
 		rw.WriteHeader(http.StatusBadRequest)
 		rw.Write([]byte("Username Missing"))
@@ -111,10 +74,32 @@ func SignupHandler(rw http.ResponseWrite, r *http.Request) {
 
 	if _, ok := r.Header["Passwordhash"]; !ok {
 		rw.WriteHeader(http.StatusBadRequest)
-		rw.Write([]byte("Password Hash missing"))
+		rw.Write([]byte("Passwordhash Missing"))
+		return
+	}
+
+	valid, err := ValidateUser(r.Header["Username"][0], r.Header["Passwordhash"][0])
+	if err != nil {
+		rw.WriteHeader(http.StatusBadRequest)
+		rw.Write([]byte("Client does not exist"))
+		return
+	}
+
+	if !valid {
+		rw.WriteHeader(http.StatusUnauthorized)
+		rw.Write([]byte("Incorrect password"))
+		return
+	}
+
+	tokenString, err := GetSignedToken()
+	tokenList = append(tokenList, tokenString)
+	fmt.Println(tokenList)
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		rw.Write([]byte("Internal Server Error"))
 		return
 	}
 
 	rw.WriteHeader(http.StatusOK)
-	return
+	rw.Write([]byte(tokenString))
 }

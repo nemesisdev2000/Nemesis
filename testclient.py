@@ -1,17 +1,42 @@
 import requests
 
-def sendRequest():
-    url = "http://localhost:8000/listen"
+def startListener():
+    url = "http://127.0.0.1:5555/api/listen"
     headers = {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json"
             }
     data = {
-            'type': 'TcpListener',
-            'port': '1331'
+            "type": "TcpListener",
+            "port": "1332"
             }
     try:
-        requests.post(url = url, json = data, headers = headers, timeout=0.3)
+        res = requests.post(url = url, json = data, headers = headers)
+        print(res.text)
     except Exception as e:
         return
 
-sendRequest()
+def checksignin():
+    url = "http://localhost:5555/auth/signin"
+    headers = {
+            'Username': 'admin',
+            'Passwordhash': 'passw0rd'
+            }
+    try:
+        res = requests.get(url = url, headers = headers)
+        print(res.text)
+    except Exception as e:
+        return
+
+def checksignup():
+    url = "http://localhost:5555/auth/signup"
+    headers = {
+            'Username': 'ritaban',
+            'Passwordhash': 'password1'
+            }
+    try:
+        res = requests.post(url = url, headers = headers)
+        print(res.text)
+    except Exception as e:
+        return
+
+startListener()
