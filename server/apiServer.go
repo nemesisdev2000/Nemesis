@@ -26,6 +26,7 @@ type listenerProfile struct {
 func main() {
 	router := gin.Default()
 	router.GET("/tests/:id", getItemByID)
+	router.GET("/stoplistener/:id", stopListener)
 	router.POST("/tests", addData)
 	router.POST("/listen", startListener)
 
@@ -45,6 +46,13 @@ func startListener(c *gin.Context) {
 	l := C2Server.Listen(port, ltype)
 	c.IndentedJSON(http.StatusOK, lp)
 	c.Data(http.StatusOK, "Content-Type: text/html", []byte(l.RemoteAddr().String()))
+}
+
+func stopListener(c *gin.Context) {
+	id := c.Param("id")
+	fmt.Println("ID : ", id)
+	C2Server.Stop(id)
+	c.Data(http.StatusOK, "Content-Type: text/html", []byte("Stopped listener"))
 }
 
 func addData(c *gin.Context) {

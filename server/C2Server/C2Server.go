@@ -18,3 +18,8 @@ func Listen(port string, ltype string) net.Conn {
 	c := Call(port, m[ltype])
 	return c
 }
+
+func Stop(id string) {
+	TcpListener.StopListener(id)
+	return
+}

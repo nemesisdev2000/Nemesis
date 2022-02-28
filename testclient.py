@@ -17,6 +17,26 @@ def startListener():
     except Exception as e:
         return
 
+def stopListener():
+    token = input("Enter Token : ")
+    ID = input("Enter Listener ID : ")
+    url = "http://127.0.0.1:5555/api/stoplistener"
+    header = {
+            "Content-Type": "application/json"
+            }
+    data = {
+            "type": "TcpListener",
+            "port": "1331",
+            "token": token,
+            "id": ID
+            }
+    try:
+        res = requests.post(url = url, json = data, headers = header)
+        print(res.text)
+    except Exception as e:
+        print(e)
+        return
+
 def checksignin():
     url = "http://localhost:5555/auth/signin"
     headers = {
@@ -41,4 +61,6 @@ def checksignup():
     except Exception as e:
         return
 
+checksignin()
 startListener()
+stopListener()

@@ -24,7 +24,8 @@ func main() {
 
 	//adding functionanlity to communicate with the API server
 	apiRouter := mainRouter.PathPrefix("/api").Subrouter()
-	apiRouter.HandleFunc("/listen", ApiClient.SendPost).Methods("POST")
+	apiRouter.HandleFunc("/listen", ApiClient.ApiStartListener).Methods("POST")
+	apiRouter.HandleFunc("/stoplistener", ApiClient.ApiStopListener).Methods("POST")
 
 	server := &http.Server{
 		Addr:    "127.0.0.1:5555",
