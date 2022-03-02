@@ -61,6 +61,21 @@ def checksignup():
     except Exception as e:
         return
 
+def checksignout():
+    url = "http://localhost:5555/auth/signout"
+    token = input("Enter the token : ")
+    header = {
+            'Username' : 'admin',
+            'Token': token
+            }
+    try:
+        res = requests.get(url = url, headers = header)
+        print(res.text)
+    except Exception as e:
+        print(e)
+        return
+
 checksignin()
 startListener()
 stopListener()
+checksignout()

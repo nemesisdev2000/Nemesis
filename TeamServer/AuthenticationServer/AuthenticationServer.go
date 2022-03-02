@@ -10,7 +10,13 @@ import (
 	"github.com/nemesisdev2000/Nemesis/TeamServer/UserDB"
 )
 
-var tokenList []string
+//var tokenList []string
+type clientDetails struct {
+	username string
+	token    string
+}
+
+var clientList []clientDetails
 
 func SignupHandler(rw http.ResponseWriter, r *http.Request) {
 	if _, ok := r.Header["Username"]; !ok {
@@ -92,8 +98,17 @@ func SigninHandler(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	tokenString, err := GetSignedToken()
-	tokenList = append(tokenList, tokenString)
-	fmt.Println(tokenList)
+	userString := r.Header["Username"][0]
+	signedinuser := CheckSignedInUser(userString)
+	if signedinuser == true {
+		fmt.Println("User already signed in ")
+		return
+	}
+	var client clientDetails
+	client.username = userString
+	client.token = tokenString
+	clientList = append(clientList, client)
+	fmt.Println(clientList)
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
 		rw.Write([]byte("Internal Server Error"))
@@ -104,11 +119,38 @@ func SigninHandler(rw http.ResponseWriter, r *http.Request) {
 	rw.Write([]byte(tokenString))
 }
 
+func RemoveIndex(s []clientDetails, i int) []clientDetails {
+	s[i] = s[len(s)-1]
+	return s[:len(s)-1]
+}
+
+func SignoutHandler(rw http.ResponseWriter, r *http.Request) {
+	tokenString := r.Header["Token"][0]
+	usernameString := r.Header["Username"][0]
+	flag := ValidateRequest(tokenString)
+	if flag == false {
+		rw.Write([]byte("Gaar mara bokachoda"))
+		return
+	}
+	flag = false
+	flag = CheckSignedInUser(usernameString)
+	if flag == false {
+		rw.Write([]byte("Bolodchoda gandu"))
+		return
+	}
+	for i, a := range clientList {
+		if a.username == usernameString {
+			clientList = RemoveIndex(clientList, i)
+			break
+		}
+	}
+}
+
 //this checks if a signed in user is sending the command or not
 func ValidateRequest(token string) bool {
 	flag := false
-	for _, a := range tokenList {
-		if a == token {
+	for _, a := range clientList {
+		if a.token == token {
 			flag = true
 			break
 		}
@@ -119,4 +161,15 @@ func ValidateRequest(token string) bool {
 	} else {
 		return true
 	}
+}
+
+func CheckSignedInUser(username string) bool {
+	flag := false
+	for _, a := range clientList {
+		if username == a.username {
+			flag = true
+			break
+		}
+	}
+	return flag
 }

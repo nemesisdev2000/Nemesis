@@ -20,7 +20,9 @@ func main() {
 
 	authRouter.HandleFunc("/signin", AuthenticationServer.SigninHandler).Methods("GET")
 
-	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"http://localhost:4444"}))
+	authRouter.HandleFunc("/signout", AuthenticationServer.SignoutHandler).Methods("GET")
+
+	ch := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"http://localhost:8000"}))
 
 	//adding functionanlity to communicate with the API server
 	apiRouter := mainRouter.PathPrefix("/api").Subrouter()
