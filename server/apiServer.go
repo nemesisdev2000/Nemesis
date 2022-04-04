@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"reflect"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nemesisdev2000/Nemesis/server/C2Server"
@@ -44,8 +45,14 @@ func startListener(c *gin.Context) {
 	ltype := lp.Type
 
 	l := C2Server.Listen(port, ltype)
+
+	requestValue := reflect.ValueOf(l)
+	listenerID := requestValue.FieldByName("ID")
+	listenerType := requestValue.FieldByName("Type")
 	c.IndentedJSON(http.StatusOK, lp)
-	c.Data(http.StatusOK, "Content-Type: text/html", []byte(l.RemoteAddr().String()))
+	//c.Data(http.StatusOK, "Content-Type: text/html", []byte(l.RemoteAddr().String()))
+	response := "Listener Started of Type : " + listenerType.String() + " with listener ID " + listenerID.String()
+	c.Data(http.StatusOK, "Content-Type: text/html", []byte(response))
 }
 
 func stopListener(c *gin.Context) {

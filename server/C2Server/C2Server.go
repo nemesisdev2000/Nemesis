@@ -1,21 +1,21 @@
 package C2Server
 
 import (
-	"net"
-
 	"github.com/nemesisdev2000/Nemesis/Listeners/TcpListener"
 )
 
-func Call(port string, f func(string) net.Conn) net.Conn {
-	return f(port)
+func Call(port string, fn func(string) interface{}) interface{} {
+	result := fn(port)
+	return result
 }
 
-func Listen(port string, ltype string) net.Conn {
-	m := map[string]func(string) net.Conn{
+func Listen(port string, ltype string) interface{} {
+	m := map[string]func(string) interface{}{
 		"TcpListener": TcpListener.StartListener,
 	}
 
 	c := Call(port, m[ltype])
+	//return c
 	return c
 }
 

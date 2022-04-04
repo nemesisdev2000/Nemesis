@@ -33,7 +33,7 @@ func RemoveIndex(s []listenerConfig, i int) []listenerConfig {
 	return s[:len(s)-1]
 }
 
-func StartListener(port string) net.Conn {
+func StartListener(port string) interface{} {
 	l, err := reuse.Listen("tcp4", ":"+port)
 	fmt.Println("Listener type : ", reflect.TypeOf(l))
 
@@ -47,9 +47,10 @@ func StartListener(port string) net.Conn {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	HandleListener("TcpListener", port, c, l)
+	lconfig := HandleListener("TcpListener", port, c, l)
 	fmt.Println(listenerPool)
-	return c
+	//return c
+	return lconfig
 }
 
 func StopListener(id string) {
@@ -66,9 +67,9 @@ func StopListener(id string) {
 	return
 }
 
-func HandleListener(Type string, Port string, conn net.Conn, listen net.Listener) {
+func HandleListener(Type string, Port string, conn net.Conn, listen net.Listener) listenerConfig {
 	id := strconv.Itoa(GenerateId())
 	lconfig := listenerConfig{Type: Type, Port: Port, ID: id, conn: conn, listener: listen}
 	listenerPool = append(listenerPool, lconfig)
-	return
+	return lconfig
 }
