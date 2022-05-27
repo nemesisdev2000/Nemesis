@@ -4,5 +4,6 @@ This is a custom C2 project that I am working on. The Team Server is created usi
 
 ## TODO
 
-- Create Listener
-- Create console to configure a listener
+- Create a Tcp Listener
+- ~~Create console to configure a listener~~
+- Make the listener act independently from the server
