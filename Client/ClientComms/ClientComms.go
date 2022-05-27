@@ -81,7 +81,7 @@ func SendTcpListener(port string, host string) bool {
 	}
 
 	fmt.Println("Response status : ", response.Status)
-	if strings.Contains(response.Status, "200") {
+	if strings.Contains(response.Status, "OK") {
 		return true
 	} else {
 		return false
@@ -91,4 +91,22 @@ func SendTcpListener(port string, host string) bool {
 	fmt.Println("Response Body : ", string(body))
 
 	return false
+}
+
+func ShowListeners() []string {
+	url := "http://localhost:8000/showListeners"
+	resp, err := http.Get(url)
+	if err != nil {
+		fmt.Println("Error ", err.Error())
+		return nil
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Println("Erro ", err.Error())
+		return nil
+	}
+
+	fmt.Println("Response Body : ", strings.Split(string(body), "\""))
+	return strings.Split(string(body), "\"")
 }

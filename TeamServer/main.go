@@ -11,6 +11,7 @@ func main() {
 	router := gin.Default()
 	router.POST("/login", ClientServices.Login)
 	router.POST("/listen", HandleListeners.HandleListener)
+	router.GET("/showListeners", HandleListeners.ShowListeners)
 
 	router.Run("localhost:8000")
 }

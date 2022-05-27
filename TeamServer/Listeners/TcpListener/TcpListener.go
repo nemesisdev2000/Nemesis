@@ -5,6 +5,7 @@ import (
 	"net"
 
 	"github.com/nemesisdev2000/Nemesis/TeamServer/DataTypes"
+	"github.com/nemesisdev2000/Nemesis/TeamServer/ListenerPool"
 )
 
 func StartListener(listener DataTypes.ListenerProfile) {
@@ -16,30 +17,21 @@ func StartListener(listener DataTypes.ListenerProfile) {
 		return
 	}
 
-	defer l.Close()
-
 	fmt.Println("Listenening on " + host + ":" + port)
 
-	for {
-		conn, err := l.Accept()
-		if err != nil {
-			fmt.Println("Error", err.Error())
-			return
-		}
-
-		go handleRequest(conn)
-	}
-}
-
-func handleRequest(conn net.Conn) {
-	buf := make([]byte, 1024)
-	reqlen, err := conn.Read(buf)
+	go handleRequest(l)
+	conn, err := l.Accept()
 	if err != nil {
 		fmt.Println("Error", err.Error())
 		return
 	}
 
-	conn.Write([]byte("Message received"))
-	fmt.Println("Req len : ", reqlen)
-	conn.Close()
+	fmt.Println("Connection established : ", conn)
+
+	return
+}
+
+func handleRequest(l net.Listener) {
+	fmt.Println("Adding Listener")
+	ListenerPool.AddListener(l)
 }

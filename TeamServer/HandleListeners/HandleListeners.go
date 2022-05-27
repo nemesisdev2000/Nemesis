@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/nemesisdev2000/Nemesis/TeamServer/DataTypes"
+	"github.com/nemesisdev2000/Nemesis/TeamServer/ListenerPool"
 	"github.com/nemesisdev2000/Nemesis/TeamServer/Listeners/TcpListener"
 )
 
@@ -28,6 +29,16 @@ func HandleListener(c *gin.Context) {
 		"TCP": TcpListener.StartListener,
 	}
 
-	listenerFunctions[listenerType](listener)
+	go listenerFunctions[listenerType](listener)
 	c.IndentedJSON(http.StatusOK, listener)
+}
+
+func ShowListeners(c *gin.Context) {
+	var tcpListenerPool []ListenerPool.TcpListenerType
+	tcpListenerPool = ListenerPool.ShowListeners()
+	for _, a := range tcpListenerPool {
+		c.IndentedJSON(http.StatusOK, a.ListenerID)
+		c.IndentedJSON(http.StatusOK, a.TcpListener.Addr().String())
+	}
+	return
 }

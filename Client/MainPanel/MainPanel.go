@@ -4,7 +4,9 @@ import (
 	"fmt"
 
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/widget"
 
+	"github.com/nemesisdev2000/Nemesis/Client/ClientComms"
 	"github.com/nemesisdev2000/Nemesis/Client/SetupMenus/ListenerSetup"
 )
 
@@ -20,7 +22,19 @@ func ShowMainWindow(w fyne.Window, a fyne.App) {
 	newmenu1 := fyne.NewMenu("File", menuItem1, menuItem2)
 
 	listenerConfigure := fyne.NewMenuItem("Configure Listener", func() { ListenerSetup.SetupTcpListener(a) })
-	showListeners := fyne.NewMenuItem("Show Listeners", func() { fmt.Println("Shows configured listeners") })
+	showListeners := fyne.NewMenuItem("Show Listeners", func() {
+		listenerDetails := ClientComms.ShowListeners()
+
+		listenerWindow := a.NewWindow("Listeners")
+		listenerWindow.Resize(fyne.NewSize(700, 400))
+		details := widget.NewLabel("")
+		details.Move(fyne.NewPos(150, 150))
+
+		details.Text = listenerDetails[1]
+
+		listenerWindow.SetContent(details)
+		listenerWindow.Show()
+	})
 	ListenerMenu := fyne.NewMenu("Listener", listenerConfigure, showListeners)
 
 	newmenu3 := fyne.NewMenu("Payloads", menuItem1, menuItem2)
