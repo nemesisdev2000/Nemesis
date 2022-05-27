@@ -13,7 +13,7 @@ import (
 func main() {
 	a := app.New()
 
-	w := a.NewWindow("Client Application")
+	w := a.NewWindow("Nemesis Client")
 	w.Resize(fyne.NewSize(400, 400))
 	w.CenterOnScreen()
 
