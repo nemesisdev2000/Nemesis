@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 
 	"github.com/nemesisdev2000/Nemesis/Client/ClientComms"
@@ -31,13 +30,8 @@ func ShowMainWindow(w fyne.Window, a fyne.App) {
 		listenerWindow.Resize(fyne.NewSize(700, 400))
 		fmt.Println("Number of listeners : ", d)
 
-		headers := []string{"Listener ID", "Listener Details"}
-		var listenerDetails [][]string
-		listenerDetails = append(listenerDetails, headers)
-
 		if len(d) > 1 {
-			t := MakeTable(d)
-			listenerDetails = append(listenerDetails, t...)
+			listenerDetails := MakeTable(d)
 			list := widget.NewTable(
 				func() (int, int) {
 					return len(listenerDetails), len(listenerDetails[0])
@@ -46,28 +40,12 @@ func ShowMainWindow(w fyne.Window, a fyne.App) {
 					return widget.NewLabel("")
 				},
 				func(i widget.TableCellID, o fyne.CanvasObject) {
-					if strings.Contains(listenerDetails[i.Row][i.Col], "Listener") {
-						o.(*widget.Label).SetText(listenerDetails[i.Row][i.Col])
-						o.(*widget.Label).TextStyle = fyne.TextStyle{Bold: true}
-					}
 					o.(*widget.Label).SetText(listenerDetails[i.Row][i.Col])
 				})
 
-			del := widget.NewButton("Ok", func() { fmt.Println("Stopped listener ") })
-			list.OnSelected = func(id widget.TableCellID) {
-				fmt.Println("Selected ITEM ", listenerDetails[id.Row][id.Col])
-				drop := widget.NewSelect(
-					[]string{"Stop Listener"},
-					func(s string) {
-						del.Refresh()
-						fmt.Println("Label : ", s)
-					})
-				editconf := container.NewVBox(drop, del)
-				listenerWindow.SetContent(editconf)
-			}
-
 			fmt.Println("Details : ", listenerDetails)
 			list.SetColumnWidth(0, 300)
+			list.Move(fyne.NewPos(0, 100))
 
 			listenerWindow.SetContent(list)
 		}
