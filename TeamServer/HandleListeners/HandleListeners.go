@@ -14,6 +14,10 @@ import (
 
 type fn func(DataTypes.ListenerProfile)
 
+type listenerID struct {
+	ID string `json:"id"`
+}
+
 func HandleListener(c *gin.Context) {
 	var listener DataTypes.ListenerProfile
 
@@ -41,4 +45,14 @@ func ShowListeners(c *gin.Context) {
 		c.IndentedJSON(http.StatusOK, a.TcpListener.Addr().String())
 	}
 	return
+}
+
+func StopListener(c *gin.Context) {
+	var listener listenerID
+
+	if err := c.BindJSON(&listener); err != nil {
+		return
+	}
+
+	TcpListener.StopListener(listener.ID)
 }

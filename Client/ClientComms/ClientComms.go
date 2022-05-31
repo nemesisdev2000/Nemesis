@@ -20,6 +20,10 @@ type TcpListenerDetails struct {
 	Host string
 }
 
+type ListenerDetails struct {
+	ID string
+}
+
 func Login(username string, password string) bool {
 	url := "http://localhost:8000/login"
 
@@ -109,4 +113,38 @@ func ShowListeners() []string {
 
 	fmt.Println("Response Body : ", strings.Split(string(body), "\""))
 	return strings.Split(string(body), "\"")
+}
+
+func StopListener(listenerID string) {
+	url := "http://localhost:8000/stopListener"
+
+	listenerData := &ListenerDetails{ID: listenerID}
+	b, err := json.Marshal(listenerData)
+
+	if err != nil {
+		return
+	}
+
+	request, error := http.NewRequest("POST", url, bytes.NewBuffer(b))
+	request.Header.Set("Content-Type", "application/json; charset=UTF-8")
+
+	client := &http.Client{}
+	response, error := client.Do(request)
+	if error != nil {
+		panic(error)
+		return
+	}
+
+	fmt.Println("Response status : ", response.Status)
+	if strings.Contains(response.Status, "OK") {
+		return
+	} else {
+		return
+	}
+
+	fmt.Println("Response Headers : ", response.Header)
+	body, _ := ioutil.ReadAll(response.Body)
+	fmt.Println("Response Body  : ", string(body))
+
+	return
 }

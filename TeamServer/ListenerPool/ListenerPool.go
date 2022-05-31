@@ -3,6 +3,7 @@ package ListenerPool
 import (
 	"fmt"
 	"net"
+	"strings"
 
 	"github.com/nemesisdev2000/Nemesis/TeamServer/CryptoFunctions"
 )
@@ -13,6 +14,11 @@ type TcpListenerType struct {
 }
 
 var TcpListenerPool []TcpListenerType
+
+func remove(s []TcpListenerType, i int) []TcpListenerType {
+	s[i] = s[len(s)-1]
+	return s[:len(s)-1]
+}
 
 func AddListener(l net.Listener) {
 	//adding the tcplistener to listener pool
@@ -27,7 +33,12 @@ func ShowListeners() []TcpListenerType {
 	return TcpListenerPool
 }
 
-func StopListener(c net.Conn, l net.Listener) {
-	c.Close()
-	l.Close()
+func DeleteListener(listenerID string) {
+	for index, a := range TcpListenerPool {
+		if strings.Contains(listenerID, a.ListenerID) {
+			a.TcpListener.Close()
+			TcpListenerPool = remove(TcpListenerPool, index)
+			fmt.Println("Deleted Listener ID : ", a.ListenerID)
+		}
+	}
 }

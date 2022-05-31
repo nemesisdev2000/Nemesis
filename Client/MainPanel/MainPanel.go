@@ -35,6 +35,11 @@ func ShowMainWindow(w fyne.Window, a fyne.App) {
 		var listenerDetails [][]string
 		listenerDetails = append(listenerDetails, headers)
 
+		type fn func(string)
+		funcLists := map[string]fn{
+			"Stop Listener": ClientComms.StopListener,
+		}
+
 		if len(d) > 1 {
 			t := MakeTable(d)
 			listenerDetails = append(listenerDetails, t...)
@@ -53,14 +58,17 @@ func ShowMainWindow(w fyne.Window, a fyne.App) {
 					o.(*widget.Label).SetText(listenerDetails[i.Row][i.Col])
 				})
 
-			del := widget.NewButton("Ok", func() { fmt.Println("Stopped listener ") })
+			var funcName, ID string
+			del := widget.NewButton("Ok", func() { funcLists[funcName](ID) })
 			list.OnSelected = func(id widget.TableCellID) {
 				fmt.Println("Selected ITEM ", listenerDetails[id.Row][id.Col])
+				ID = listenerDetails[id.Row][id.Col]
 				drop := widget.NewSelect(
 					[]string{"Stop Listener"},
 					func(s string) {
 						del.Refresh()
 						fmt.Println("Label : ", s)
+						funcName = s
 					})
 				editconf := container.NewVBox(drop, del)
 				listenerWindow.SetContent(editconf)

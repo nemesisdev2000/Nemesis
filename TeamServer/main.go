@@ -12,6 +12,7 @@ func main() {
 	router.POST("/login", ClientServices.Login)
 	router.POST("/listen", HandleListeners.HandleListener)
 	router.GET("/showListeners", HandleListeners.ShowListeners)
+	router.POST("/stopListener", HandleListeners.StopListener)
 
 	router.Run("localhost:8000")
 }

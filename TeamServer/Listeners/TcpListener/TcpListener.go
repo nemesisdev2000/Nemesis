@@ -31,6 +31,10 @@ func StartListener(listener DataTypes.ListenerProfile) {
 	return
 }
 
+func StopListener(listenerID string) {
+	ListenerPool.DeleteListener(listenerID)
+}
+
 func handleRequest(l net.Listener) {
 	fmt.Println("Adding Listener")
 	ListenerPool.AddListener(l)
