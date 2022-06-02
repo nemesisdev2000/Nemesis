@@ -4,8 +4,6 @@ This is a custom C2 project that I am working on. The Team Server is created usi
 
 ## TODO
 
-- Create a Tcp Listener
-- ~~Create console to configure a listener~~
-- ~~Make the listener act independently from the server~~
-- Show the list of listeners on the Client GUI
-- Make mechanism to stop and delete listener configurations
+- Create Agents in C/C++
+- Create mechanism for communication between agents and the C2
+- Create GUI for interactive with the agents

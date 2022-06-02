@@ -29,6 +29,7 @@ func ShowMainWindow(w fyne.Window, a fyne.App) {
 
 		listenerWindow := a.NewWindow("Listeners")
 		listenerWindow.Resize(fyne.NewSize(700, 400))
+		listenerWindow.CenterOnScreen()
 		fmt.Println("Number of listeners : ", d)
 
 		headers := []string{"Listener ID", "Listener Details"}
@@ -61,7 +62,6 @@ func ShowMainWindow(w fyne.Window, a fyne.App) {
 			var funcName, ID string
 			del := widget.NewButton("Ok", func() { funcLists[funcName](ID) })
 			list.OnSelected = func(id widget.TableCellID) {
-				fmt.Println("Selected ITEM ", listenerDetails[id.Row][id.Col])
 				ID = listenerDetails[id.Row][id.Col]
 				drop := widget.NewSelect(
 					[]string{"Stop Listener"},

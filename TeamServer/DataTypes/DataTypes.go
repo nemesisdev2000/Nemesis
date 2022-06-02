@@ -10,6 +10,11 @@ type ListenerProfile struct {
 	Host string `json:"host"`
 }
 
+type ListenerDetails struct {
+	Type string `json:"type"`
+	ID   string `json:"id"`
+}
+
 func Nothing() {
 	fmt.Println("Nothing here")
 }

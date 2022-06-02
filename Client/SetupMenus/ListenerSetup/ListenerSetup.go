@@ -15,16 +15,23 @@ func SetupTcpListener(a fyne.App) {
 	label := widget.NewLabel("")
 
 	setupWindow := a.NewWindow("Configure Tcp Listener")
-	setupWindow.Resize(fyne.NewSize(700, 1000))
+	setupWindow.Resize(fyne.NewSize(400, 500))
+	setupWindow.CenterOnScreen()
 	hostname := widget.NewEntry()
 	hostname.SetPlaceHolder("Enter Hostname of Listener")
 	hostname.Resize(fyne.NewSize(250, 30))
-	hostname.Move(fyne.NewPos(100, 100))
+	hostname.Move(fyne.NewPos(50, 30))
+	hostlabel := widget.NewLabel("Host:")
+	hostlabel.Resize(fyne.NewSize(250, 30))
+	hostlabel.Move(fyne.NewPos(1, 30))
 
 	port := widget.NewEntry()
 	port.SetPlaceHolder("Enter the Bind port")
 	port.Resize(fyne.NewSize(250, 30))
-	port.Move(fyne.NewPos(100, 150))
+	port.Move(fyne.NewPos(50, 60))
+	portlabel := widget.NewLabel("Port:")
+	portlabel.Resize(fyne.NewSize(250, 30))
+	portlabel.Move(fyne.NewPos(1, 60))
 
 	done_btn := widget.NewButton("Done", func() {
 		fmt.Println("Hostname : ", hostname.Text)
@@ -46,7 +53,7 @@ func SetupTcpListener(a fyne.App) {
 	done_btn.Resize(fyne.NewSize(50, 50))
 	done_btn.Move(fyne.NewPos(150, 250))
 
-	content := container.NewWithoutLayout(hostname, port, done_btn, label)
+	content := container.NewWithoutLayout(hostlabel, hostname, portlabel, port, done_btn, label)
 	setupWindow.SetContent(content)
 	setupWindow.Show()
 }

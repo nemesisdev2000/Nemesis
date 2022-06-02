@@ -13,9 +13,18 @@ import (
 )
 
 type fn func(DataTypes.ListenerProfile)
+type stop func(DataTypes.ListenerDetails)
 
 type listenerID struct {
 	ID string `json:"id"`
+}
+
+var listenerFunctions = map[string]fn{
+	"TCP": TcpListener.StartListener,
+}
+
+var listenerStop = map[string]stop{
+	"TCP": TcpListener.StopListener,
 }
 
 func HandleListener(c *gin.Context) {
@@ -28,10 +37,6 @@ func HandleListener(c *gin.Context) {
 	fmt.Println("Type : ", reflect.TypeOf(listener.Type))
 
 	listenerType := strings.TrimSpace(listener.Type)
-
-	listenerFunctions := map[string]fn{
-		"TCP": TcpListener.StartListener,
-	}
 
 	go listenerFunctions[listenerType](listener)
 	c.IndentedJSON(http.StatusOK, listener)
@@ -48,11 +53,11 @@ func ShowListeners(c *gin.Context) {
 }
 
 func StopListener(c *gin.Context) {
-	var listener listenerID
+	var listenerDetails DataTypes.ListenerDetails
 
-	if err := c.BindJSON(&listener); err != nil {
+	if err := c.BindJSON(&listenerDetails); err != nil {
 		return
 	}
 
-	TcpListener.StopListener(listener.ID)
+	listenerStop[listenerDetails.Type](listenerDetails)
 }

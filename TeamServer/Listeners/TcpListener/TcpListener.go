@@ -31,8 +31,8 @@ func StartListener(listener DataTypes.ListenerProfile) {
 	return
 }
 
-func StopListener(listenerID string) {
-	ListenerPool.DeleteListener(listenerID)
+func StopListener(listenerDetails DataTypes.ListenerDetails) {
+	ListenerPool.DeleteListener(listenerDetails.ID)
 }
 
 func handleRequest(l net.Listener) {

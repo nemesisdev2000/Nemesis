@@ -21,11 +21,12 @@ type TcpListenerDetails struct {
 }
 
 type ListenerDetails struct {
-	ID string
+	Type string
+	ID   string
 }
 
 func Login(username string, password string) bool {
-	url := "http://localhost:8000/login"
+	url := "http://192.168.181.136:8000/login"
 
 	user := &userDetails{Username: username, Password: password}
 	b, err := json.Marshal(user)
@@ -65,7 +66,7 @@ func HandleSubmissions(stat string) bool {
 }
 
 func SendTcpListener(port string, host string) bool {
-	url := "http://localhost:8000/listen"
+	url := "http://192.168.181.136:8000/listen"
 
 	listener := &TcpListenerDetails{Type: "TCP", Port: port, Host: host}
 	b, err := json.Marshal(listener)
@@ -98,7 +99,7 @@ func SendTcpListener(port string, host string) bool {
 }
 
 func ShowListeners() []string {
-	url := "http://localhost:8000/showListeners"
+	url := "http://192.168.181.136:8000/showListeners"
 	resp, err := http.Get(url)
 	if err != nil {
 		fmt.Println("Error ", err.Error())
@@ -116,9 +117,9 @@ func ShowListeners() []string {
 }
 
 func StopListener(listenerID string) {
-	url := "http://localhost:8000/stopListener"
+	url := "http://192.168.181.136:8000/stopListener"
 
-	listenerData := &ListenerDetails{ID: listenerID}
+	listenerData := &ListenerDetails{Type: "TCP", ID: listenerID}
 	b, err := json.Marshal(listenerData)
 
 	if err != nil {
