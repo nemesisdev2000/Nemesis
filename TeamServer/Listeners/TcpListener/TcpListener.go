@@ -1,8 +1,10 @@
 package TcpListener
 
 import (
+	"bufio"
 	"fmt"
 	"net"
+	"strings"
 
 	"github.com/nemesisdev2000/Nemesis/TeamServer/DataTypes"
 	"github.com/nemesisdev2000/Nemesis/TeamServer/ListenerPool"
@@ -26,7 +28,14 @@ func StartListener(listener DataTypes.ListenerProfile) {
 		return
 	}
 
-	fmt.Println("Connection established : ", conn)
+	fmt.Println("Connection established : ", conn.RemoteAddr().String())
+	data, err := bufio.NewReader(conn).ReadString('\n')
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	temp := strings.TrimSpace(string(data))
+	fmt.Println("Callback received from : ", temp)
 
 	return
 }

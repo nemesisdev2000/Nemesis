@@ -19,26 +19,26 @@ func SetupTcpListener(a fyne.App) {
 	setupWindow.CenterOnScreen()
 	hostname := widget.NewEntry()
 	hostname.SetPlaceHolder("Enter Hostname of Listener")
-	hostname.Resize(fyne.NewSize(250, 30))
+	hostname.Resize(fyne.NewSize(250, 36))
 	hostname.Move(fyne.NewPos(50, 30))
 	hostlabel := widget.NewLabel("Host:")
-	hostlabel.Resize(fyne.NewSize(250, 30))
+	hostlabel.Resize(fyne.NewSize(250, 36))
 	hostlabel.Move(fyne.NewPos(1, 30))
 
 	port := widget.NewEntry()
 	port.SetPlaceHolder("Enter the Bind port")
-	port.Resize(fyne.NewSize(250, 30))
-	port.Move(fyne.NewPos(50, 60))
+	port.Resize(fyne.NewSize(250, 36))
+	port.Move(fyne.NewPos(50, 65))
 	portlabel := widget.NewLabel("Port:")
-	portlabel.Resize(fyne.NewSize(250, 30))
-	portlabel.Move(fyne.NewPos(1, 60))
+	portlabel.Resize(fyne.NewSize(250, 36))
+	portlabel.Move(fyne.NewPos(1, 65))
 
 	done_btn := widget.NewButton("Done", func() {
 		fmt.Println("Hostname : ", hostname.Text)
 		fmt.Println("Port : ", port.Text)
 
 		stat := ClientComms.SendTcpListener(port.Text, hostname.Text)
-		if stat == true {
+		if stat {
 			label := widget.NewLabel("")
 			label.Text = "Listener Created"
 			successPopUp := widget.NewPopUp(label, setupWindow.Canvas())
